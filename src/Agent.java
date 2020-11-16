@@ -3,6 +3,7 @@ public class Agent {
 	static final int CHERCHE_MEGOT = 1;
 	static final int A_TROUVER_MEGOT = 2;
 	static final int RAMASSE_MEGOT = 3;
+	static final int VIDE_MEGOTS = 4;
 	static final int MAX_MEGOTS = 10;
 
 	public static void main(String[] args) {
@@ -41,8 +42,13 @@ public class Agent {
 				c.reinitializeParameters();
 				if (total_megot == MAX_MEGOTS) {
 					System.out.println("La poche à mégots est pleine.");
-					interrupteur.setOn(false);
+					etat=VIDE_MEGOTS;
 				}
+				else etat=CHERCHE_MEGOT;
+				break;
+			case VIDE_MEGOTS : 
+				System.out.println("Le robot vide ses mégots.");
+				total_megot = 0;
 				etat=CHERCHE_MEGOT;
 				break;
 			}
