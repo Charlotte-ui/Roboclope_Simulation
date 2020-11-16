@@ -13,8 +13,9 @@ public class Agent {
 		Memoire m = new Memoire(interrupteur);
 		Capteur2 c = new Capteur2(m,interrupteur);
 		Actionneur a = new Actionneur();
-
+		Batterie b = new Batterie(interrupteur);
 		
+		new Thread(b).start();
 		new Thread(c).start();
 		Thread memory = new Thread(m);
 		memory.start();
@@ -43,12 +44,8 @@ public class Agent {
 			}
 			
 			
-			
-			
-			
-			
 		}
-		
+		System.out.println("Le robot rentre à la base");
 
 	}
 	
