@@ -3,6 +3,7 @@ public class Agent {
 	static final int CHERCHE_MEGOT = 1;
 	static final int A_TROUVER_MEGOT = 2;
 	static final int RAMASSE_MEGOT = 3;
+	static final int MAX_MEGOTS = 10;
 
 	public static void main(String[] args) {
 		On interrupteur = new On();
@@ -38,7 +39,10 @@ public class Agent {
 			case RAMASSE_MEGOT : 
 				System.out.println("Le robot ramasse le mégot en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"]. Il a rammassé en tout "+(++total_megot)+" mégots.");
 				c.reinitializeParameters();
-			//	c.seReveiller(); dans cette version l'IA ne se réveil pas
+				if (total_megot == MAX_MEGOTS) {
+					System.out.println("La poche à mégots est pleine.");
+					interrupteur.setOn(false);
+				}
 				etat=CHERCHE_MEGOT;
 				break;
 			}
