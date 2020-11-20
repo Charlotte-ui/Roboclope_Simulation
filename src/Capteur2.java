@@ -39,7 +39,7 @@ public class Capteur2 implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return ((int)(Math.random()*5) ==0) ?true:false;
+		return (int)(Math.random()*5) ==0;
 	}
 	
 	

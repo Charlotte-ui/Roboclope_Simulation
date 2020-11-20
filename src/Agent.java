@@ -1,8 +1,18 @@
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
 
 public class Agent {
 	static final int CHERCHE_MEGOT = 1;
 	static final int A_TROUVER_MEGOT = 2;
 	static final int RAMASSE_MEGOT = 3;
+	static final int VIDE_MEGOTS = 4;
+	static final int MAX_MEGOTS = 10;
+	static final Pin pinLeft = RaspiPin.GPIO_04; // dans l'expemple, 4 et 5 sont branchés sur 6
+	static final Pin pinRight = RaspiPin.GPIO_05;
+	static final Pin pinSynchro = RaspiPin.GPIO_06;
+
+
 
 	public static void main(String[] args) {
 		On interrupteur = new On();
@@ -12,9 +22,10 @@ public class Agent {
 		
 		Memoire m = new Memoire(interrupteur);
 		Capteur2 c = new Capteur2(m,interrupteur);
-		Actionneur a = new Actionneur();
-
+		Actionneur a = new Actionneur(pinLeft,pinRight,pinSynchro);
+		Batterie b = new Batterie(interrupteur);		
 		
+		new Thread(b).start();
 		new Thread(c).start();
 		Thread memory = new Thread(m);
 		memory.start();
@@ -37,18 +48,22 @@ public class Agent {
 			case RAMASSE_MEGOT : 
 				System.out.println("Le robot ramasse le mégot en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"]. Il a rammassé en tout "+(++total_megot)+" mégots.");
 				c.reinitializeParameters();
-			//	c.seReveiller(); dans cette version l'IA ne se réveil pas
+				if (total_megot == MAX_MEGOTS) {
+					System.out.println("La poche à mégots est pleine.");
+					etat=VIDE_MEGOTS;
+				}
+				else etat=CHERCHE_MEGOT;
+				break;
+			case VIDE_MEGOTS : 
+				System.out.println("Le robot vide ses mégots.");
+				total_megot = 0;
 				etat=CHERCHE_MEGOT;
 				break;
 			}
 			
 			
-			
-			
-			
-			
 		}
-		
+		System.out.println("Le robot rentre à la base");
 
 	}
 	
