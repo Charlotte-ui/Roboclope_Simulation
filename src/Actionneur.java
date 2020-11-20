@@ -1,50 +1,100 @@
-
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPin;
-import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinDirection;
-import com.pi4j.io.gpio.PinMode;
-import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.gpio.trigger.GpioCallbackTrigger;
-import com.pi4j.io.gpio.trigger.GpioPulseStateTrigger;
-import com.pi4j.io.gpio.trigger.GpioSetStateTrigger;
-import com.pi4j.io.gpio.trigger.GpioSyncStateTrigger;
-import com.pi4j.io.gpio.event.GpioPinListener;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.io.gpio.event.PinEventType;
+import com.pi4j.wiringpi.Gpio;
+import com.pi4j.wiringpi.SoftPwm;
 
+//In Pi4j PWM values go from 0 to 100
+// PWM --> https://fr.wikipedia.org/wiki/Modulation_de_largeur_d%27impulsion 
 
+// https://javatutorial.net/raspberry-pi-control-dc-motor-speed-and-direction-java
 
 public class Actionneur  {
-	//http://wiringpi.com/pins/ 
+	
+	
 	// create gpio controller instance
-	// provision gpio pin #02 as an input pin with its internal pull down resistor enabled
-    // (configure pin edge to both rising and falling to get notified for HIGH and LOW state
-    // changes)
 	final GpioController gpio = GpioFactory.getInstance();
-	//INPUT
-	GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02,             // PIN NUMBER
-            													"MyButton",                   // PIN FRIENDLY NAME (optional)
-            													PinPullResistance.PULL_DOWN); // PIN RESISTANCE (optional)
+	// gpio.shutdown(); --> pour arrêter
 	
-	// provision gpio pins #04 as an output pin and make sure is is set to LOW at startup
-	// OUTPUT
-	GpioPinDigitalOutput myLed = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_04,   // PIN NUMBER
-	                                                           "My LED",           // PIN FRIENDLY NAME (optional)
-	                                                           PinState.LOW);      // PIN STARTUP STATE (optional)
+	GpioPinDigitalOutput pinLeftOutput;
+	GpioPinDigitalOutput pinRightOutput;
+	GpioPinDigitalOutput pinSynchroOutput;
 	
+	public Actionneur(Pin pinLeft, Pin pinRight, Pin pinSynchro) {
+		pinLeftOutput = gpio.provisionDigitalOutputPin(pinLeft, "PinLeft");;
+		pinRightOutput = gpio.provisionDigitalOutputPin(pinRight, "PinRight");;
+		pinSynchroOutput = gpio.provisionDigitalOutputPin(pinSynchro, "PinSynchro");
+		
+		// initialize wiringPi library, this is needed for PWM
+        Gpio.wiringPiSetup();
+        
+        // softPwmCreate(int pin, int value, int range)
+        // the range is set like (min=0 ; max=100)
+        SoftPwm.softPwmCreate(pinLeft.getAddress(), 0, 100);
+        SoftPwm.softPwmCreate(pinRight.getAddress(), 0, 100);
+        SoftPwm.softPwmCreate(pinSynchro.getAddress(), 0, 100);
+        
+	}
+	
+	//rotate motor clockwise for 3 seconds
+	public void rotateMotorClockwise () {
+		pinLeftOutput.high();  
+		pinRightOutput.low();
+		pinSynchroOutput.high(); 
+     // wait 3 seconds
+        try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	//rotate motor counter clockwise for 3 seconds
+		public void rotateMotorCounterClockwise () {
+			pinLeftOutput.low();  
+			pinRightOutput.high();
+			pinSynchroOutput.high(); 
+	     // wait 3 seconds
+	        try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+        // stop motor
+		public void stop () {
+			pinSynchroOutput.low();
+		}
+		
+		
+	    public void setSpeed (int speed) throws InterruptedException {
+	        // softPwmWrite(int pin, int value)
+	        // This updates the PWM value on the given pin. The value is checked to
+	        // be in-range and pins that haven't previously been initialized via 
+	        // softPwmCreate will be silently ignored.
+	        SoftPwm.softPwmWrite(pinLeftOutput.getPin().getAddress(), speed);
+	        SoftPwm.softPwmWrite(pinRightOutput.getPin().getAddress(), speed);
+	        SoftPwm.softPwmWrite(pinSynchroOutput.getPin().getAddress(), speed);
+	    }
+		
+		
+		
+		
+
 	public void avance () {
 		try {
 			Thread.sleep(1000); // on attend 1s
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 	}
+	
 
 }

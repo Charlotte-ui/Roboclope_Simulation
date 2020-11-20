@@ -1,3 +1,6 @@
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
 
 public class Agent {
 	static final int CHERCHE_MEGOT = 1;
@@ -5,6 +8,11 @@ public class Agent {
 	static final int RAMASSE_MEGOT = 3;
 	static final int VIDE_MEGOTS = 4;
 	static final int MAX_MEGOTS = 10;
+	static final Pin pinLeft = RaspiPin.GPIO_04; // dans l'expemple, 4 et 5 sont branchés sur 6
+	static final Pin pinRight = RaspiPin.GPIO_05;
+	static final Pin pinSynchro = RaspiPin.GPIO_06;
+
+
 
 	public static void main(String[] args) {
 		On interrupteur = new On();
@@ -14,8 +22,8 @@ public class Agent {
 		
 		Memoire m = new Memoire(interrupteur);
 		Capteur2 c = new Capteur2(m,interrupteur);
-		Actionneur a = new Actionneur();
-		Batterie b = new Batterie(interrupteur);
+		Actionneur a = new Actionneur(pinLeft,pinRight,pinSynchro);
+		Batterie b = new Batterie(interrupteur);		
 		
 		new Thread(b).start();
 		new Thread(c).start();
