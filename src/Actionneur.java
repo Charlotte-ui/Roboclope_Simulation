@@ -13,10 +13,13 @@ import com.pi4j.wiringpi.SoftPwm;
 
 // https://javatutorial.net/raspberry-pi-control-dc-motor-speed-and-direction-java
 
+// erreur normal à l'exécution https://github.com/Pi4J/pi4j/issues/411
+// doit être lancée sur une rasberry pi après avoir installé ce truc http://wiringpi.com/download-and-install/
+
 public class Actionneur  {
 	
 	// create gpio controller instance
-	final GpioController gpio = GpioFactory.getInstance();
+	GpioController gpio;
 	
     GpioPinDigitalOutput motor1pinA; // tous les pin des moteurs en output
     GpioPinDigitalOutput motor1pinB;
@@ -27,6 +30,8 @@ public class Actionneur  {
 	
 	public Actionneur(int portM1A, int portM1B, int portM1E, int portM2A, int portM2B, int portM2E) {
 		
+		gpio = GpioFactory.getInstance();
+				
 		motor1pinA = gpio.provisionDigitalOutputPin(RaspiPin.getPinByAddress(portM1A), "m1A");
 	    motor1pinB = gpio.provisionDigitalOutputPin(RaspiPin.getPinByAddress(portM1B), "m1B");
 	    motor1pinE = gpio.provisionDigitalOutputPin(RaspiPin.getPinByAddress(portM1E), "m1E");
