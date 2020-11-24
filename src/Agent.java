@@ -34,16 +34,15 @@ public class Agent {
 
 
 		while (interrupteur.isOn()) {
-			
 			switch (etat) {
 			case CHERCHE_MEGOT : 
 				System.out.println("Le robot cherche un mégot.");
-				a.simule_avancee();
+				simule_avancee();
 				if (m.isPositionDetecter()) etat=A_TROUVER_MEGOT;
 				break;
 			case A_TROUVER_MEGOT : 
 				System.out.println("Le robot s'oriente vers le mégot en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"] a une distance de "+m.getCoordonneesCurrent().getDistance());
-				a.simule_avancee();
+				simule_avancee();
 				if (m.getCoordonneesCurrent().getDistance() <= 0) etat=RAMASSE_MEGOT;
 				else m.getCoordonneesCurrent().setDistance(m.getCoordonneesCurrent().getDistance()-1); // petite ligne de simulation en attendant d'avoir un vrai retour du robot
 				break;
@@ -70,7 +69,14 @@ public class Agent {
 	}
 	
 	
-	
+	public static void simule_avancee () {
+		try {
+			Thread.sleep(1000); // on attend 1s
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+	}
 	
 	
 
