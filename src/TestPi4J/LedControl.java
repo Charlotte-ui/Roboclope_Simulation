@@ -36,3 +36,7 @@ public class LedControl {
         gpio.shutdown();
     }
 }
+
+
+// Execute the program on Raspberry like this
+// sudo java -classpath .:classes:/opt/pi4j/lib/'*' LedControl

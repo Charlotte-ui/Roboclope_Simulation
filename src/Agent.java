@@ -8,11 +8,13 @@ public class Agent {
 	static final int RAMASSE_MEGOT = 3;
 	static final int VIDE_MEGOTS = 4;
 	static final int MAX_MEGOTS = 10;
-	static final Pin pinLeft = RaspiPin.GPIO_04; // dans l'expemple, 4 et 5 sont branchés sur 6
-	static final Pin pinRight = RaspiPin.GPIO_05;
-	static final Pin pinSynchro = RaspiPin.GPIO_06;
-
-
+	// A avance, B recule
+	static final int m1A = 4; // dans l'expemple, 4 et 5 sont branchés sur 6 pour le moteur 1
+	static final int m1B = 5;
+	static final int m1E = 6;
+	static final int m2A = 0; // dans l'expemple, 0 et 2 sont branchés sur 3 pour le moteur 2
+	static final int m2B = 3;
+	static final int m2E = 2;
 
 	public static void main(String[] args) {
 		On interrupteur = new On();
@@ -22,7 +24,7 @@ public class Agent {
 		
 		Memoire m = new Memoire(interrupteur);
 		Capteur2 c = new Capteur2(m,interrupteur);
-		Actionneur a = new Actionneur(pinLeft,pinRight,pinSynchro);
+		Actionneur a = new Actionneur(m1A,m1B,m1E,m2A,m2B,m2E);
 		Batterie b = new Batterie(interrupteur);		
 		
 		new Thread(b).start();
@@ -36,12 +38,12 @@ public class Agent {
 			switch (etat) {
 			case CHERCHE_MEGOT : 
 				System.out.println("Le robot cherche un mégot.");
-				a.avance();
+				a.simule_avancee();
 				if (m.isPositionDetecter()) etat=A_TROUVER_MEGOT;
 				break;
 			case A_TROUVER_MEGOT : 
 				System.out.println("Le robot s'oriente vers le mégot en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"] a une distance de "+m.getCoordonneesCurrent().getDistance());
-				a.avance();
+				a.simule_avancee();
 				if (m.getCoordonneesCurrent().getDistance() <= 0) etat=RAMASSE_MEGOT;
 				else m.getCoordonneesCurrent().setDistance(m.getCoordonneesCurrent().getDistance()-1); // petite ligne de simulation en attendant d'avoir un vrai retour du robot
 				break;
