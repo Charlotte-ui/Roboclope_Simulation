@@ -54,7 +54,7 @@ public class ExempleActionneur {
         
      // create a gpio synchronization trigger on the input pin
      // when the input state changes, also set LED controlling gpio pin to same state
-     myButton.addTrigger(new GpioSyncStateTrigger(myLed));
+   //   myButton.addTrigger(new GpioSyncStateTrigger(myLed));
         
 	}
 	

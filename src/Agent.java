@@ -1,3 +1,5 @@
+import java.io.*;
+
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
@@ -24,14 +26,84 @@ public class Agent {
 		
 		Memoire m = new Memoire(interrupteur);
 		Capteur2 c = new Capteur2(m,interrupteur);
-		Actionneur a = new Actionneur(m1A,m1B,m1E,m2A,m2B,m2E);
+//		Actionneur a = new Actionneur(m1A,m1B,m1E,m2A,m2B,m2E);
 		Batterie b = new Batterie(interrupteur);		
 		
 		new Thread(b).start();
 		new Thread(c).start();
 		Thread memory = new Thread(m);
 		memory.start();
+		
+		
+		
+		String pythonScriptPath = "C:\\Users\\Chacha\\Documents\\python\\helloPython.py";
+		String[] cmd = new String[2];
+		cmd[0] = "python"; // check version of installed python: python -V
+		cmd[1] = pythonScriptPath;
+		 
+		// create runtime to execute external command
+		Runtime rt = Runtime.getRuntime();
+		Process pr;
+		try {
+			pr = rt.exec(cmd);
+			System.out.println(pr.isAlive());
+			// retrieve output from python script
+			BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+			String line = "test";
+			System.out.println(line); 
+			while((line = bfr.readLine()) != null) {
+				// display each output line form python script
+				System.out.println(line);
+			}
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 
+		try {
+			ProcessBuilder pb = new ProcessBuilder("python", "helloPython.py"); 
+			pb.directory(new File("C:\\Users\\Chacha\\Documents\\python")); 
+			Process p = pb.start();
+			// retrieve output from python script
+			BufferedReader bfr = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = "test";
+			System.out.println(line); 
+			while((line = bfr.readLine()) != null) {
+				// display each output line form python script
+				System.out.println(line);
+			}
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		BufferedReader fr;
+		String chaineLue;
+		try {
+			fr=new BufferedReader(new FileReader(pythonScriptPath));
+			chaineLue=fr.readLine();
+			while (chaineLue != null) {   
+				chaineLue=fr.readLine();
+				System.out.println(chaineLue);
+			}
+			 fr.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+		 
+	
 
 		while (interrupteur.isOn()) {
 			switch (etat) {
