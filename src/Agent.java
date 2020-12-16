@@ -36,7 +36,7 @@ public class Agent {
 		
 		
 		
-		String pythonScriptPath = "C:\\Users\\Chacha\\Documents\\python\\helloPython.py";
+		String pythonScriptPath = "python/helloPython.py";
 		String[] cmd = new String[2];
 		cmd[0] = "python"; // check version of installed python: python -V
 		cmd[1] = pythonScriptPath;
@@ -63,7 +63,7 @@ public class Agent {
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder("python", "helloPython.py"); 
-			pb.directory(new File("C:\\Users\\Chacha\\Documents\\python")); 
+			pb.directory(new File("python")); 
 			Process p = pb.start();
 			// retrieve output from python script
 			BufferedReader bfr = new BufferedReader(new InputStreamReader(p.getInputStream()));
