@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="lib/pi4j-1.2/lib/junit.jar;lib/pi4j-1.2/lib/pi4j-gpio-extension.jar;lib/pi4j-1.2/lib/pi4j-device-javadoc.jar;lib/pi4j-1.2/lib/pi4j-core-sources.jar;lib/pi4j-1.2/lib/pi4j-core.jar;lib/pi4j-1.2/lib/pi4j-example-javadoc.jar;lib/pi4j-1.2/lib/pi4j-device.jar;lib/pi4j-1.2/lib/pi4j-gpio-extension-javadoc.jar;lib/pi4j-1.2/lib/pi4j-example.jar;lib/pi4j-1.2/lib/pi4j-device-sources.jar;lib/pi4j-1.2/lib/pi4j-example-sources.jar;lib/pi4j-1.2/lib/pi4j-gpio-extension-sources.jar;lib/pi4j-1.2/lib/pi4j-core-javadoc.jar" destdir="doc" doctitle="Documentation_Roboclope" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.8" sourcefiles="src/Coordonnee.java,src/PythonCaller.java,src/RecupererDataIA.java,src/ExempleActionneur.java,src/Actionneur.java,src/Memoire.java,src/Capteur2.java,src/Agent.java,src/Capteur.java,src/On.java,src/Batterie.java" sourcepath="src" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
