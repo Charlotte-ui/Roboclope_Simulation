@@ -4,131 +4,109 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 
+/**
+ * Controle l'agent
+ * Classe qui poss√®de le Main
+ * @author Charlotte Marty
+ *
+ */
 public class Agent {
+	
+	// Etat de l'agent
+	
+	/**
+	 * E1 : le robot cherche les m√©gots
+	 */
 	static final int CHERCHE_MEGOT = 1;
+	/**
+	 * E2 : le robot a rep√©r√© un m√©got et vas le chercher
+	 */
 	static final int A_TROUVER_MEGOT = 2;
+	/**
+	 * E3 : le robot est devant le m√©got et doit le ramasser
+	 */
 	static final int RAMASSE_MEGOT = 3;
+	/**
+	 * E4 : la poche a m√©gots du robot est pleine et il doit la vider
+	 */
 	static final int VIDE_MEGOTS = 4;
+	
+	/**
+	 * constante : nombre maximal de m√©gots transportables
+	 */
 	static final int MAX_MEGOTS = 10;
-	// A avance, B recule
-	static final int m1A = 4; // dans l'expemple, 4 et 5 sont branchÈs sur 6 pour le moteur 1
-	static final int m1B = 5;
-	static final int m1E = 6;
-	static final int m2A = 0; // dans l'expemple, 0 et 2 sont branchÈs sur 3 pour le moteur 2
-	static final int m2B = 3;
-	static final int m2E = 2;
 
+	// identifiant des ports de la RasberryPI
+	// A avance, B recule
+	/**
+	 * identifiant du port A du moteur 1 
+	 */
+	static final int m1A = 4; // dans l'expemple, 4 et 5 sont branchÔøΩs sur 6 pour le moteur 1
+	static final int m1B = 5;
+	/**
+	 * identifiant du port E du moteur 1 
+	 */
+	static final int m1E = 6;
+	/**
+	 * identifiant du port A du moteur 2 
+	 */
+	static final int m2A = 0; // dans l'expemple, 0 et 2 sont branchÔøΩs sur 3 pour le moteur 2
+	/**
+	 * identifiant du port E du moteur 2 
+	 */
+	static final int m2B = 3;
+	/**
+	 * identifiant du port E du moteur 2 
+	 */
+	static final int m2E = 2;
+	
+	/** 
+     * <b>Programme principale</b> 
+     * D√©marre les threads et g√®re l'agent 
+     * 
+     */ 
 	public static void main(String[] args) {
 		On interrupteur = new On();
 		interrupteur.setOn(true);
 		int total_megot = 0;
-		int etat = 1;
+		int etat = CHERCHE_MEGOT;
 		
 		Memoire m = new Memoire(interrupteur);
-		Capteur2 c = new Capteur2(m,interrupteur);
+		PythonCaller c = new PythonCaller();
 //		Actionneur a = new Actionneur(m1A,m1B,m1E,m2A,m2B,m2E);
-		Batterie b = new Batterie(interrupteur);		
+		Batterie b = new Batterie(interrupteur);	
+		RecupererDataIA data = new RecupererDataIA(interrupteur, m);
 		
-		new Thread(b).start();
+		new Thread(b).start(); 
 		new Thread(c).start();
 		Thread memory = new Thread(m);
 		memory.start();
-		
-		
-		
-		String pythonScriptPath = "python/helloPython.py";
-		String[] cmd = new String[2];
-		cmd[0] = "python"; // check version of installed python: python -V
-		cmd[1] = pythonScriptPath;
-		 
-		// create runtime to execute external command
-		Runtime rt = Runtime.getRuntime();
-		Process pr;
-		try {
-			pr = rt.exec(cmd);
-			System.out.println(pr.isAlive());
-			// retrieve output from python script
-			BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-			String line = "test";
-			System.out.println(line); 
-			while((line = bfr.readLine()) != null) {
-				// display each output line form python script
-				System.out.println(line);
-			}
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-
-		try {
-			ProcessBuilder pb = new ProcessBuilder("python", "helloPython.py"); 
-			pb.directory(new File("python")); 
-			Process p = pb.start();
-			// retrieve output from python script
-			BufferedReader bfr = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line = "test";
-			System.out.println(line); 
-			while((line = bfr.readLine()) != null) {
-				// display each output line form python script
-				System.out.println(line);
-			}
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
-		
-		
-		
-		
-		
-		
-		BufferedReader fr;
-		String chaineLue;
-		try {
-			fr=new BufferedReader(new FileReader(pythonScriptPath));
-			chaineLue=fr.readLine();
-			while (chaineLue != null) {   
-				chaineLue=fr.readLine();
-				System.out.println(chaineLue);
-			}
-			 fr.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-
-		
-		 
+		new Thread(data).start();
 	
-
 		while (interrupteur.isOn()) {
 			switch (etat) {
 			case CHERCHE_MEGOT : 
-				System.out.println("Le robot cherche un mÈgot.");
+				System.out.println("Le robot cherche un m√©got.");
 				simule_avancee();
 				if (m.isPositionDetecter()) etat=A_TROUVER_MEGOT;
 				break;
 			case A_TROUVER_MEGOT : 
-				System.out.println("Le robot s'oriente vers le mÈgot en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"] a une distance de "+m.getCoordonneesCurrent().getDistance());
+				System.out.println("Le robot s'oriente vers le m√©got en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"] a une distance de "+m.getCoordonneesCurrent().getDistance());
 				simule_avancee();
 				if (m.getCoordonneesCurrent().getDistance() <= 0) etat=RAMASSE_MEGOT;
 				else m.getCoordonneesCurrent().setDistance(m.getCoordonneesCurrent().getDistance()-1); // petite ligne de simulation en attendant d'avoir un vrai retour du robot
 				break;
 			case RAMASSE_MEGOT : 
-				System.out.println("Le robot ramasse le mÈgot en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"]. Il a rammassÈ en tout "+(++total_megot)+" mÈgots.");
-				c.reinitializeParameters();
+				System.out.println("Le robot ramasse le m√©got en ["+m.getCoordonneesCurrent().getX()+","+m.getCoordonneesCurrent().getY()+"]. Il a ramass√© en tout "+(++total_megot)+" m√©gots.");
+				data.reinitializeParameters();
 				if (total_megot == MAX_MEGOTS) {
-					System.out.println("La poche ‡ mÈgots est pleine.");
+					System.out.println("La poche √† m√©gots est pleine.");
 					etat=VIDE_MEGOTS;
 				}
 				else etat=CHERCHE_MEGOT;
 				break;
 			case VIDE_MEGOTS : 
-				System.out.println("Le robot vide ses mÈgots.");
+				System.out.println("Le robot vide ses m√©gots.");
 				total_megot = 0;
 				etat=CHERCHE_MEGOT;
 				break;
@@ -136,11 +114,13 @@ public class Agent {
 			
 			
 		}
-		System.out.println("Le robot rentre ‡ la base");
+		System.out.println("Le robot rentre √† la base");
 
 	}
 	
-	
+	/**
+	 * Simule le mouvement du robot avec un temps d'attente
+	 */
 	public static void simule_avancee () {
 		try {
 			Thread.sleep(1000); // on attend 1s
@@ -149,7 +129,5 @@ public class Agent {
 		}
 		
 	}
-	
-	
 
 }

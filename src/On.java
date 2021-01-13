@@ -1,6 +1,9 @@
-
+/**
+ * Container permettant Ã  tout les threads de savoir quand il faurt s'arrÃªter (le java c'est relou car on ne peut pas passer les types valeurs en references)... 
+ * @author Charlotte Marty
+ *
+ */
 public class On {
-	// le java c'est relou car on ne peut pas passer les types valeurs en références... donc voici un container pour on, qui determine si le robot tourne ou s'arrête
 	private boolean on;
 
 	public boolean isOn() {

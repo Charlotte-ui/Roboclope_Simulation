@@ -13,21 +13,56 @@ import com.pi4j.wiringpi.SoftPwm;
 
 // https://javatutorial.net/raspberry-pi-control-dc-motor-speed-and-direction-java
 
-// erreur normal à l'exécution https://github.com/Pi4J/pi4j/issues/411
-// doit être lancée sur une rasberry pi après avoir installé ce truc http://wiringpi.com/download-and-install/
+// erreur normal ï¿½ l'exï¿½cution https://github.com/Pi4J/pi4j/issues/411
+// doit ï¿½tre lancï¿½e sur une rasberry pi aprï¿½s avoir installï¿½ ce truc http://wiringpi.com/download-and-install/
 
+/**
+ * Controle les mouvements du robot
+ * @author Charlotte Marty
+ *
+ */
 public class Actionneur  {
 	
 	// create gpio controller instance
-	GpioController gpio;
 	
+	/**
+	 * gpio controller
+	 */
+	GpioController gpio;
+	/**
+	 * output pin du port A du moteur 1 
+	 */
     GpioPinDigitalOutput motor1pinA; // tous les pin des moteurs en output
+    /**
+	 * output pin du port B du moteur 1 
+	 */
     GpioPinDigitalOutput motor1pinB;
+    /**
+	 * output pin du port E du moteur 1 
+	 */
     GpioPinDigitalOutput motor1pinE;
+    /**
+	 * output pin du port A du moteur 2 
+	 */
     GpioPinDigitalOutput motor2pinA;
+    /**
+	 * output pin du port B du moteur 2 
+	 */
     GpioPinDigitalOutput motor2pinB;
+    /**
+	 * output pin du port E du moteur 2 
+	 */
     GpioPinDigitalOutput motor2pinE;
 	
+    /**
+     * Constructeur de l'actionneur 
+     * @param portM1A
+     * @param portM1B
+     * @param portM1E
+     * @param portM2A
+     * @param portM2B
+     * @param portM2E
+     */
 	public Actionneur(int portM1A, int portM1B, int portM1E, int portM2A, int portM2B, int portM2E) {
 		
 		gpio = GpioFactory.getInstance();
@@ -54,9 +89,11 @@ public class Actionneur  {
         
 	}
 	
-	
-
-	//rotate a motor clockwise for some seconds
+	/**
+	 * Fait tourner le moteur clockwise pendant un certain nombre de secondes
+	 * @param motor
+	 * @param second
+	 */
 	public void rotateMotorClockwise (int motor, int second) {
 		if (motor==1) {
 			motor1pinA.high();
@@ -73,7 +110,11 @@ public class Actionneur  {
 		wait(second);
 	}
 
-	//rotate a motor counter clockwise for some seconds
+	/**
+	 * Fait tourner le moteur counter-clockwise pendant un certain nombre de secondes
+	 * @param motor
+	 * @param second
+	 */
 	public void rotateMotorCounterClockwise (int motor, int second) {
 		if (motor==1) {
 			motor1pinA.low();
@@ -90,7 +131,10 @@ public class Actionneur  {
 		wait(second);
 	}
 	
-    // stop one motor
+	/**
+	 * stop un moteur
+	 * @param motor
+	 */
 	public void stopMotor (int motor) {
 		if (motor==1) {
 			motor1pinE.low();
@@ -101,7 +145,10 @@ public class Actionneur  {
 		}
 	}
 
-	//rotate both motors clockwise for n seconds
+	/**
+	 * Fait tourner les deux moteurs clockwise pendant un certain nombre de secondes
+	 * @param second
+	 */
 	public void avance (int second) {
 		rotateMotorClockwise(1,0); //premier moteur
 		rotateMotorClockwise(2,0); //second moteur
@@ -110,7 +157,10 @@ public class Actionneur  {
 		wait(second);
 	}
 
-	//rotate both motors counter clockwise for n seconds
+	/**
+	 * Fait tourner les deux moteurs counter-clockwise pendant un certain nombre de secondes
+	 * @param second
+	 */	
 	public void recule (int second) {
 		rotateMotorCounterClockwise(1,0); //premier moteur
 		rotateMotorCounterClockwise(2,0); //second moteur
@@ -119,8 +169,11 @@ public class Actionneur  {
 		wait(second);
 	}
 
-	// attention, en fonction des branchements droite et  gauche sont inversé
-	//rotate motor 1 clockwise and motor 2 counter clockwise for some seconds
+	/**
+	 * Fait tourner moteur 1 clockwise et moteur 2 counter-clockwise pendant un certain nombre de secondes
+	 * <b>attention, en fonction des branchements droite et  gauche sont inversee</b> 
+	 * @param second
+	 */	
 	public void droite (int second) {
 		rotateMotorClockwise(1,0); //premier moteur
 		rotateMotorCounterClockwise(2,0); //second moteur
@@ -128,9 +181,12 @@ public class Actionneur  {
 		// wait some seconds
 		wait(second);
 	}
-
-	// attention, en fonction des branchements droite et  gauche sont inversé
-	//rotate motor 2 clockwise and motor 1 counter clockwise for some seconds
+	
+	/**
+	 * Fait tourner moteur 2 clockwise et moteur 1 counter-clockwise pendant un certain nombre de secondes
+	 * <b>attention, en fonction des branchements droite et  gauche sont inversee</b> 
+	 * @param second
+	 */	
 	public void gauche (int second) {
 		rotateMotorCounterClockwise(1,0); //premier moteur
 		rotateMotorClockwise(2,0); //second moteur
@@ -139,19 +195,25 @@ public class Actionneur  {
 		wait(second);
 	}
 
-	// stop both motors
+	/**
+	 * stop les deux moteurs
+	 */
 	public void stop () {
 		stopMotor(1);
 		stopMotor(2);
 	}
-
-
-
+	
+	/**
+	 * shutdown le gpio controller
+	 */
 	public void shutdown() {
 		gpio.shutdown();	
 	}
 
-
+	/**
+	 * fait patienter le thread pendant n secondes
+	 * @param n
+	 */
 	private void wait (int n) {
 		try {
 			Thread.sleep(n*1000);
@@ -160,22 +222,15 @@ public class Actionneur  {
 		}
 	}
 
-	// motorPin désigne les port A et B des moteurs 1 et 2. A fait avancer, B reculer
-	// la vitesse est en pourcentage entre 1 et 100
-	// This updates the PWM value on the given pin. The value is checked to be in-range and pins that haven't previously been initialized via  softPwmCreate will be silently ignored.
+	/**
+	 * Mets Ã  jour la PWM value du pin donnÃ©e. La valeur est vÃ©rifiÃ©e pour Ãªtre dans la plage (entre 1 et 100) et les pins qui n'ont pas Ã©tÃ© prÃ©alablement initialisÃ©es via softPwmCreate seront ignorÃ©es.
+	 * <b>motorPin doit concerner les ports A et B. A fait avancer, B reculer</b>
+	 * @param motorPin
+	 * @param speed
+	 * @throws InterruptedException
+	 */
 	public void setSpeed (int motorPin, int speed) throws InterruptedException {
 		SoftPwm.softPwmWrite(motorPin, speed);
-	}
-
-
-	// méthode qui attend, uniquement pour la simulation
-	public void simule_avancee () {
-		try {
-			Thread.sleep(1000); // on attend 1s
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 

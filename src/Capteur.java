@@ -1,4 +1,9 @@
-
+/**
+ * Anncienne simulation de la reception de donnees par l'IA 
+ * A recycler en classe qui gÃ¨re la vidÃ©o / le radar
+ * @author Charlotte Marty
+ *
+ */
 public class Capteur implements Runnable {
 	static final int[] NO_COORDONNEES = new int[2];
 	private Object verrouCapteur=new Object();
@@ -7,7 +12,7 @@ public class Capteur implements Runnable {
 	private int[] coordonnees ; 
 	private int distance ;
 	
-	public Capteur() {
+	public Capteur() { 
 		super();
 		detection = false;
 		coordonnees = NO_COORDONNEES;
@@ -64,7 +69,7 @@ public class Capteur implements Runnable {
 	public void attendre() {
 		synchronized (verrouCapteur) {
 			try {
-				System.err.println("Le robot arrête d'écouter l'IA");
+				System.err.println("Le robot arrÃªte d'ï¿½couter l'IA");
 				verrouCapteur.wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -75,7 +80,7 @@ public class Capteur implements Runnable {
 	public void seReveiller() {
 		synchronized (verrouCapteur) {
 			verrouCapteur.notify();
-			System.err.println("Le robot recommence à écouter l'IA");
+			System.err.println("Le robot recommence ï¿½ ï¿½couter l'IA");
 		}
 	}
 	
